@@ -25,7 +25,7 @@ async function saveScoreHistory(score, total, questions) {
       time: 60 - totalTime,
       questions: questions,
       timestamp: new Date().toISOString(),
-      provider: selectedAI
+      provider: 'cohere_ai'
     });
 
     // Keep only last 50 entries
@@ -43,142 +43,142 @@ async function saveScoreHistory(score, total, questions) {
 }
 
 // ui components
-function showAISelector() {
-  const quizContainer = document.getElementById('quizContainer');
-  quizContainer.innerHTML = `
-    <div class="ai-selector-container">
-      <h3 style="margin-bottom: 15px;">Select AI Provider</h3>
-      <div class="custom-select" id="customSelect">
-        <div class="select-selected" id="selectSelected">
-          <span id="selectedText">Cohere AI</span>
-          <span class="select-arrow">▼</span>
-        </div>
-        <div class="select-items" id="selectItems" style="display: none;">
-          <div class="select-option" data-value="cohere_ai">Cohere AI</div>
-          <div class="select-option" data-value="gemini_ai">Gemini AI</div>
-        </div>
-      </div>
-      <div id="apiKeyContainer" style="display: none; margin-top: 15px; margin-bottom: 15px;">
-        <input type="text" id="geminiApiKey" placeholder="Enter Gemini API Key" 
-               style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;" />
-      </div>
-    </div>
-    <style>
-      .custom-select {
-        position: relative;
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      .select-selected {
-        background-color: #fff;
-        padding: 10px 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 14px;
-        transition: all 0.2s ease;
-      }
-      .select-selected:hover {
-        border-color: #999;
-      }
-      .select-selected.active {
-        border-color: #666;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-      .select-arrow {
-        font-size: 10px;
-        transition: transform 0.2s ease;
-      }
-      .select-selected.active .select-arrow {
-        transform: rotate(180deg);
-      }
-      .select-items {
-        position: absolute;
-        background-color: #fff;
-        border: 1px solid #666;
-        border-top: none;
-        border-radius: 0 0 6px 6px;
-        width: 100%;
-        z-index: 99;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      }
-      .select-option {
-        padding: 10px 12px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.2s ease;
-      }
-      .select-option:hover {
-        background-color: #f0f0f0;
-      }
-      .select-option:last-child {
-        border-radius: 0 0 6px 6px;
-      }
-    </style>
-  `;
+// function showAISelector() {
+//   const quizContainer = document.getElementById('quizContainer');
+//   quizContainer.innerHTML = `
+//     <div class="ai-selector-container">
+//       <h3 style="margin-bottom: 15px;">Select AI Provider</h3>
+//       <div class="custom-select" id="customSelect">
+//         <div class="select-selected" id="selectSelected">
+//           <span id="selectedText">Cohere AI</span>
+//           <span class="select-arrow">▼</span>
+//         </div>
+//         <div class="select-items" id="selectItems" style="display: none;">
+//           <div class="select-option" data-value="cohere_ai">Cohere AI</div>
+//           <div class="select-option" data-value="gemini_ai">Gemini AI</div>
+//         </div>
+//       </div>
+//       // <div id="apiKeyContainer" style="display: none; margin-top: 15px; margin-bottom: 15px;">
+//       //   <input type="text" id="geminiApiKey" placeholder="Enter Gemini API Key"
+//       //          style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;" />
+//       // </div>
+//     </div>
+//     // <style>
+//     //   .custom-select {
+//     //     position: relative;
+//     //     width: 100%;
+//     //     margin-bottom: 10px;
+//     //   }
+//     //   .select-selected {
+//     //     background-color: #fff;
+//     //     padding: 10px 12px;
+//     //     border: 1px solid #ddd;
+//     //     border-radius: 6px;
+//     //     cursor: pointer;
+//     //     display: flex;
+//     //     justify-content: space-between;
+//     //     align-items: center;
+//     //     font-size: 14px;
+//     //     transition: all 0.2s ease;
+//     //   }
+//     //   .select-selected:hover {
+//     //     border-color: #999;
+//     //   }
+//     //   .select-selected.active {
+//     //     border-color: #666;
+//     //     border-bottom-left-radius: 0;
+//     //     border-bottom-right-radius: 0;
+//     //   }
+//     //   .select-arrow {
+//     //     font-size: 10px;
+//     //     transition: transform 0.2s ease;
+//     //   }
+//     //   .select-selected.active .select-arrow {
+//     //     transform: rotate(180deg);
+//     //   }
+//     //   .select-items {
+//     //     position: absolute;
+//     //     background-color: #fff;
+//     //     border: 1px solid #666;
+//     //     border-top: none;
+//     //     border-radius: 0 0 6px 6px;
+//     //     width: 100%;
+//     //     z-index: 99;
+//     //     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+//     //   }
+//     //   .select-option {
+//     //     padding: 10px 12px;
+//     //     cursor: pointer;
+//     //     font-size: 14px;
+//     //     transition: background-color 0.2s ease;
+//     //   }
+//     //   .select-option:hover {
+//     //     background-color: #f0f0f0;
+//     //   }
+//     //   .select-option:last-child {
+//     //     border-radius: 0 0 6px 6px;
+//     //   }
+//     // </style>
+//   `;
 
-  const selectSelected = document.getElementById('selectSelected');
-  const selectItems = document.getElementById('selectItems');
-  const selectedText = document.getElementById('selectedText');
-  const apiKeyContainer = document.getElementById('apiKeyContainer');
-  const apiKeyInput = document.getElementById('geminiApiKey');
+//   const selectSelected = document.getElementById('selectSelected');
+//   const selectItems = document.getElementById('selectItems');
+//   const selectedText = document.getElementById('selectedText');
+//   const apiKeyContainer = document.getElementById('apiKeyContainer');
+//   const apiKeyInput = document.getElementById('geminiApiKey');
 
-  // Set initial value
-  const initialOption = selectedAI === 'cohere_ai' ? 'Cohere AI' : 'Gemini AI';
-  selectedText.textContent = initialOption;
-  if (selectedAI === 'gemini_ai') {
-    apiKeyContainer.style.display = 'block';
-    apiKeyInput.value = geminiApiKey;
-  }
+//   // Set initial value
+//   const initialOption = selectedAI === 'cohere_ai' ? 'Cohere AI' : 'Gemini AI';
+//   selectedText.textContent = initialOption;
+//   if (selectedAI === 'gemini_ai') {
+//     apiKeyContainer.style.display = 'block';
+//     apiKeyInput.value = geminiApiKey;
+//   }
 
-  // Toggle dropdown
-  selectSelected.addEventListener('click', (e) => {
-    e.stopPropagation();
-    selectSelected.classList.toggle('active');
-    if (selectItems.style.display === 'none') {
-      selectItems.style.display = 'block';
-    } else {
-      selectItems.style.display = 'none';
-    }
-  });
+//   // Toggle dropdown
+//   selectSelected.addEventListener('click', (e) => {
+//     e.stopPropagation();
+//     selectSelected.classList.toggle('active');
+//     if (selectItems.style.display === 'none') {
+//       selectItems.style.display = 'block';
+//     } else {
+//       selectItems.style.display = 'none';
+//     }
+//   });
 
-  // Handle option selection
-  const options = document.querySelectorAll('.select-option');
-  options.forEach((option) => {
-    option.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const value = option.getAttribute('data-value');
-      const text = option.textContent;
+//   // Handle option selection
+//   const options = document.querySelectorAll('.select-option');
+//   options.forEach((option) => {
+//     option.addEventListener('click', (e) => {
+//       e.stopPropagation();
+//       const value = option.getAttribute('data-value');
+//       const text = option.textContent;
 
-      selectedAI = value;
-      selectedText.textContent = text;
-      selectItems.style.display = 'none';
-      selectSelected.classList.remove('active');
+//       selectedAI = value;
+//       selectedText.textContent = text;
+//       selectItems.style.display = 'none';
+//       selectSelected.classList.remove('active');
 
-      if (selectedAI === 'gemini_ai') {
-        apiKeyContainer.style.display = 'block';
-      } else {
-        apiKeyContainer.style.display = 'none';
-      }
-    });
-  });
+//       if (selectedAI === 'gemini_ai') {
+//         apiKeyContainer.style.display = 'block';
+//       } else {
+//         apiKeyContainer.style.display = 'none';
+//       }
+//     });
+//   });
 
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.custom-select')) {
-      selectItems.style.display = 'none';
-      selectSelected.classList.remove('active');
-    }
-  });
+//   // Close dropdown when clicking outside
+//   document.addEventListener('click', (e) => {
+//     if (!e.target.closest('.custom-select')) {
+//       selectItems.style.display = 'none';
+//       selectSelected.classList.remove('active');
+//     }
+//   });
 
-  apiKeyInput.addEventListener('input', (e) => {
-    geminiApiKey = e.target.value;
-  });
-}
+//   apiKeyInput.addEventListener('input', (e) => {
+//     geminiApiKey = e.target.value;
+//   });
+// }
 
 async function generateQuiz() {
   userAnswers = []; // reset user answers
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   generateQuizButton.style.display = 'block';
 
   // show AI selector
-  showAISelector();
+  // showAISelector();
 
   // listen for messages from the injected script
   chrome.runtime.onMessage.addListener((message) => {
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       generateQuizButton.disabled = false;
       generateQuizButton.textContent = 'Create Quiz';
       // Show AI selector again
-      showAISelector();
+      // showAISelector();
     }
   });
 
