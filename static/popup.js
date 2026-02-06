@@ -320,6 +320,9 @@ function updateQuestionDisplay() {
   const question = currentQuiz[currentQuestionIndex];
 
   quizContent.innerHTML = `
+    <div style="text-align: center; font-size: 14px; color: #666; margin-bottom: 10px; font-weight: 500;">
+      Question ${currentQuestionIndex + 1}/${currentQuiz.length}
+    </div>
     <p style="font-size: 17px; font-weight: bold; margin-bottom: 15px;">${
       currentQuestionIndex + 1
     }. ${question.question}</p>
