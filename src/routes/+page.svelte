@@ -281,7 +281,7 @@
       </div>
     </section>
 
-    <!-- How It Works Section -->
+    <!-- how it works -->
     <section
       class="how-it-works-section min-h-screen xl:min-w-full xl:flex-shrink-0 xl:snap-start flex items-center py-12 sm:py-20 border-y border-white/10 px-4 sm:px-6"
     >
@@ -303,7 +303,7 @@
             {#each steps as step, i (step.number)}
               <div
                 class="text-center transform transition-all duration-300 hover:scale-110"
-                in:fly|local={{ y: 60, duration: 700, delay: 200 + i * 150, easing: quintOut }}
+                in:fly={{ y: 60, duration: 700, delay: 200 + i * 150, easing: quintOut }}
               >
                 <div
                   class="w-12 h-12 sm:w-16 sm:h-16 bg-white text-black rounded-full flex items-center justify-center text-xl sm:text-2xl font-bold mx-auto mb-3 sm:mb-4 transition-all duration-300 hover:bg-gray-200 animate-pulse-slow"
@@ -321,7 +321,7 @@
   {/each}
 </div>
 
-<!-- Footer - Always at bottom -->
+<!-- footer -->
 <footer
   class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm border-t border-white/10 py-4 z-50"
 >
