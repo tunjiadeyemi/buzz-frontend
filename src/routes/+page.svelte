@@ -166,6 +166,14 @@
   ];
 </script>
 
+<svelte:head>
+  <title>Buzz — Learn Better</title>
+  <meta
+    name="description"
+    content="Transform any webpage into an engaging quiz with Buzz — AI-powered learning."
+  />
+</svelte:head>
+
 <div
   bind:this={scrollContainer}
   class="min-h-screen bg-black xl:flex xl:overflow-x-auto xl:overflow-y-hidden xl:snap-x xl:snap-mandatory overflow-y-auto"

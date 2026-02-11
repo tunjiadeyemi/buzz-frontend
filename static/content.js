@@ -1,5 +1,9 @@
 console.log('Content script loaded');
 
+let scrollTimeout;
+const pageTitle = document.title;
+const pageBody = getScrolledContent();
+
 // Function to check if element is navigation-related
 function isNavigationElement(element) {
   const navSelectors = [
@@ -66,19 +70,20 @@ function getScrolledContent() {
   return visibleText.trim();
 }
 
-// Extract the page title and scrolled content
-const pageTitle = document.title;
-const pageBody = getScrolledContent();
-
-// Send data to the background script
-chrome.runtime.sendMessage({ type: 'PAGE_INFO', title: pageTitle, body: pageBody });
+// Send data to the background script (guarded)
+if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+  chrome.runtime.sendMessage({ type: 'PAGE_INFO', title: pageTitle, body: pageBody });
+}
 
 // Listen for scroll events to update content
-let scrollTimeout;
-window.addEventListener('scroll', () => {
-  clearTimeout(scrollTimeout);
-  scrollTimeout = setTimeout(() => {
-    const updatedBody = getScrolledContent();
-    chrome.runtime.sendMessage({ type: 'PAGE_INFO', title: pageTitle, body: updatedBody });
-  }, 500); // Debounce scroll events
-});
+if (document.body) {
+  document.body.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      const updatedBody = getScrolledContent();
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage({ type: 'PAGE_INFO', title: pageTitle, body: updatedBody });
+      }
+    }, 500);
+  });
+}

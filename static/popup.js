@@ -1,16 +1,177 @@
 import { getQuestions } from './api.js';
 
 let timerInterval;
-let totalTime = 60; // 60 seconds for the quiz
-let pageContent = '';
-let pageTitle = '';
+let totalTime = 60;
 let currentQuestionIndex = 0;
+
+let pageTitle = '';
+let pageContent = '';
+
 let currentQuiz = [];
 let userAnswers = [];
-let currentUser = { id: 'guest', email: 'guest@user.com' }; // default guest user
-let showingLeaderboard = true; // start with leaderboard view
-let selectedAI = 'cohere_ai'; // default AI provider
-let geminiApiKey = ''; // store Gemini API key
+// let currentUser = { id: 'guest', email: 'guest@user.com' };
+// let showingLeaderboard = true;
+
+let geminiApiKey = '';
+let selectedAI = 'cohere_ai';
+
+// Offline mode helpers: inject CSS and toggle an `offline-mode` class
+function ensureOfflineStyleElement() {
+  if (document.getElementById('offlineStyle')) return;
+  const css = `
+    .offline-mode {
+      background-color: #000 !important;
+      color: #fff !important;
+    }
+    .offline-mode * {
+      color: #fff !important;
+      background-color: transparent !important;
+      border-color: #444 !important;
+    }
+    .offline-mode table, .offline-mode th, .offline-mode td {
+      background-color: transparent !important;
+    }
+    .offline-mode input, .offline-mode button {
+      background-color: #111 !important;
+      color: #fff !important;
+      border-color: #333 !important;
+    }
+  `;
+  const style = document.createElement('style');
+  style.id = 'offlineStyle';
+  style.innerHTML = css;
+  document.head.appendChild(style);
+}
+
+function setOfflineMode(isOffline) {
+  ensureOfflineStyleElement();
+  if (isOffline) {
+    document.documentElement.classList.add('offline-mode');
+    const genButton = document.getElementById('generateQuiz');
+    if (genButton) genButton.disabled = true;
+  } else {
+    document.documentElement.classList.remove('offline-mode');
+    const genButton = document.getElementById('generateQuiz');
+    if (genButton) genButton.disabled = false;
+  }
+}
+
+function applyBuzzTitleEffects() {
+  try {
+    document.documentElement.style.backgroundColor = '#000';
+    if (document.body) document.body.style.backgroundColor = '#000';
+  } catch (e) {
+    console.log('Could not apply background color:', e);
+  }
+  // switch to confetti-only mode and start infinite confetti
+  startInfiniteConfetti();
+}
+
+// Infinite confetti mode: hides all other UI and shows falling white confetti forever
+function ensureInfiniteConfettiStyle() {
+  if (document.getElementById('buzzConfettiStyle')) return;
+  const css = `
+    html.buzz-confetti-only body > *:not(.buzz-confetti-container) {
+      display: none !important;
+    }
+    .buzz-confetti-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2147483647;
+      overflow: hidden;
+      background: #000;
+    }
+    .buzz-confetti {
+      position: absolute;
+      top: -10vh;
+      width: var(--s);
+      height: var(--s);
+      background: #fff;
+      opacity: 0.95;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(255,255,255,0.9);
+      will-change: transform, opacity;
+      animation: buzz-anim var(--d) linear var(--delay) infinite;
+    }
+    @keyframes buzz-anim {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+    }
+  `;
+  const style = document.createElement('style');
+  style.id = 'buzzConfettiStyle';
+  style.innerHTML = css;
+  document.head.appendChild(style);
+}
+
+function startInfiniteConfetti() {
+  ensureInfiniteConfettiStyle();
+
+  // hide everything except confetti container
+  document.documentElement.classList.add('buzz-confetti-only');
+
+  // enforce a minimum popup size so confetti overlay doesn't shrink the window
+  ensurePopupMinSize();
+
+  // remove existing container if present
+  const existing = document.querySelector('.buzz-confetti-container');
+  if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+  const container = document.createElement('div');
+  container.className = 'buzz-confetti-container';
+  document.body.appendChild(container);
+
+  const count = 200;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'buzz-confetti';
+    const size = Math.floor(Math.random() * 14 + 6) + 'px';
+    const duration = Math.floor(Math.random() * 4000 + 3000) + 'ms';
+    const delay = Math.floor(Math.random() * 2000) + 'ms';
+    el.style.setProperty('--s', size);
+    el.style.setProperty('--d', duration);
+    el.style.setProperty('--delay', delay);
+    el.style.left = Math.random() * 100 + '%';
+    el.style.transform = `translateY(-10vh) rotate(${Math.random() * 360}deg)`;
+    container.appendChild(el);
+  }
+
+  // keep adding a few particles periodically so it feels continuous
+  setInterval(() => {
+    const el = document.createElement('div');
+    el.className = 'buzz-confetti';
+    const size = Math.floor(Math.random() * 14 + 6) + 'px';
+    const duration = Math.floor(Math.random() * 4000 + 3000) + 'ms';
+    const delay = '0ms';
+    el.style.setProperty('--s', size);
+    el.style.setProperty('--d', duration);
+    el.style.setProperty('--delay', delay);
+    el.style.left = Math.random() * 100 + '%';
+    el.style.transform = `translateY(-10vh) rotate(${Math.random() * 360}deg)`;
+    container.appendChild(el);
+    // cleanup after its animation finishes
+    setTimeout(() => {
+      try {
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      } catch (e) {}
+    }, 8000);
+  }, 600);
+}
+
+// Ensure popup window has a reasonable minimum size so the extension UI doesn't collapse
+function ensurePopupMinSize(minW = '700px', minH = '700px') {
+  try {
+    document.documentElement.style.minWidth = minW;
+    document.documentElement.style.minHeight = minH;
+    if (document.body) {
+      document.body.style.minWidth = minW;
+      document.body.style.minHeight = minH;
+    }
+  } catch (e) {
+    // ignore errors in restricted environments
+  }
+}
 
 async function saveScoreHistory(score, total, questions) {
   try {
@@ -216,6 +377,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // enable the button since we have page content
       generateQuizButton.disabled = false;
+      // If the page is the app's home/title, apply the special effects
+      if (pageTitle === 'Buzz — Learn Better') {
+        applyBuzzTitleEffects();
+      }
     }
   });
 
@@ -266,6 +431,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // hide sign out button since we're not using auth
   signOutButton.style.display = 'none';
+
+  // initialize offline mode and listen for changes
+  setOfflineMode(!navigator.onLine);
+  window.addEventListener('online', () => setOfflineMode(false));
+  window.addEventListener('offline', () => setOfflineMode(true));
 });
 
 function startTimer() {
@@ -492,6 +662,10 @@ async function displayScoreHistory() {
             // set title to match the original quiz
             pageTitle = entry.title;
             document.getElementById('pageTitle').textContent = `Quiz Title: ${pageTitle}`;
+
+            if (pageTitle === 'Buzz — Learn Better') {
+              applyBuzzTitleEffects();
+            }
 
             // display the quiz with the questions from history
             displayQuiz(questions);
