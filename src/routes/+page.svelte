@@ -348,7 +348,7 @@
             LinkedIn
           </a>
           <a
-            href="https://github.com/tunjiadeyemi"
+            href="https://github.com/tunjiadeyemi/buzz"
             target="_blank"
             rel="noopener noreferrer"
             class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm"
